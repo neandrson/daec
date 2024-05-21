@@ -14,7 +14,7 @@
 Сервер, который имеет следующие endpoint-ы:
 
 
-- Добавление вычисления арифметического выражения
+#### Добавление вычисления арифметического выражения
  
 ```
 curl --location 'localhost/api/v1/calculate' \
@@ -41,7 +41,7 @@ curl --location 'localhost/api/v1/calculate' \
 ```
  
 
-- Получение списка выражений
+#### Получение списка выражений
  
 ```
 curl --location 'localhost/api/v1/expressions'
@@ -74,7 +74,7 @@ curl --location 'localhost/api/v1/expressions'
 * 200 - успешно получен список выражений
 * 500 - что-то пошло не так
  
-- Получение выражения по его идентификатору
+#### Получение выражения по его идентификатору
  
 ```
 curl --location 'localhost/api/v1/expressions/:id'
@@ -101,7 +101,7 @@ curl --location 'localhost/api/v1/expressions/:id'
  
 ```
  
-- Получение задачи для выполения.
+#### Получение задачи для выполения.
  
 ```
 curl --location 'localhost/internal/task'
@@ -129,7 +129,7 @@ curl --location 'localhost/internal/task'
  
 ```
  
-- Прием результата обработки данных.
+#### Прием результата обработки данных.
  
 ```
 curl --location 'localhost/internal/task' \
