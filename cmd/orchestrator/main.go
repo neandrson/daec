@@ -5,18 +5,19 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/Vojan-Najov/daec/internal/orchestrator"
+	"github.com/Vojan-Najov/daec/internal/orchestrator/application"
+	"github.com/Vojan-Najov/daec/internal/orchestrator/config"
 )
 
 func main() {
-	cfg, err := orchestrator.NewConfigFromEnv()
+	cfg, err := config.NewConfigFromEnv()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error: %w\n", err)
 		os.Exit(1)
 	}
 
 	ctx := context.Background()
-	app := orchestrator.New(cfg)
+	app := application.NewApplication(cfg)
 	exitCode := app.Run(ctx)
 	os.Exit(exitCode)
 }
