@@ -1,4 +1,4 @@
-package orchestrator
+package config
 
 import (
 	"fmt"
@@ -11,10 +11,10 @@ const (
 )
 
 type Config struct {
-	addtime time.Duration
-	subtime time.Duration
-	multime time.Duration
-	divtime time.Duration
+	Addtime time.Duration
+	Subtime time.Duration
+	Multime time.Duration
+	Divtime time.Duration
 }
 
 func NewConfigFromEnv() (*Config, error) {
@@ -36,10 +36,10 @@ func NewConfigFromEnv() (*Config, error) {
 	}
 
 	cfg := Config{
-		addtime: at,
-		subtime: st,
-		multime: mt,
-		divtime: dt,
+		Addtime: at,
+		Subtime: st,
+		Multime: mt,
+		Divtime: dt,
 	}
 
 	return &cfg, nil
