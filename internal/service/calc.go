@@ -34,6 +34,13 @@ type ExpressionList struct {
 	Exprs []Expression `json:"expressions"`
 }
 
+type Task struct {
+	Id        int64   `json:"id"`
+	Arg1      float64 `json:"arg1"`
+	Arg2      float64 `json:"arg1"`
+	Operation string  `json:"operation"`
+}
+
 func NewCalcService() *CalcService {
 	return &CalcService{
 		table: make(map[string]Expression),
@@ -84,11 +91,21 @@ func (cs *CalcService) ListAll() ExpressionList {
 	return lst
 }
 
-func (cs *CalcService) FindById(id string) (ExpressionUnit, error) {
+func (cs *CalcService) FindById(id string) (*ExpressionUnit, error) {
 	expr, found := cs.table[id]
-	fmt.Println(expr)
 	if !found {
-		return ExpressionUnit{}, fmt.Errorf("id %s no found", id)
+		return nil, fmt.Errorf("id %s no found", id)
 	}
-	return ExpressionUnit{Expr: expr}, nil
+	return &ExpressionUnit{Expr: expr}, nil
 }
+
+/*
+func (cs *CalcService) GetTask() (*Task) {
+	for k, v := range cs.table {
+		rpn := &v.rpn
+		for e := l.Front(); e != nil; e = e.Next() {
+			string(e)
+		}
+	}
+}
+*/
