@@ -85,7 +85,6 @@ func (cs *calcStates) listAll(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	w.WriteHeader(http.StatusOK)
 }
 
 func (cs *calcStates) listByID(w http.ResponseWriter, r *http.Request) {
@@ -105,8 +104,28 @@ func (cs *calcStates) listByID(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	w.WriteHeader(http.StatusOK)
 }
 
-func (ls *calcStates) sendTask(w http.ResponseWriter, r *http.Request) {
+func (cs *calcStates) sendTask(w http.ResponseWriter, r *http.Request) {
+	defer r.Body.Close()
+
+	task := cs.CalcService.GetTask()
+	if task == nil {
+		http.Error(w, "no tasks", http.StatusNotFound)
+		return
+	}
+
+	answer := struct {
+		Task *service.Task `json:"task"`
+	}{
+		Task: task,
+	}
+
+	encoder := json.NewEncoder(w)
+	encoder.SetIndent("", "    ")
+	err := encoder.Encode(&answer)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 }
