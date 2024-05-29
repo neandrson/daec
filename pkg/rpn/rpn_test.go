@@ -27,7 +27,7 @@ func TestRpn(t *testing.T) {
 			expectedErr != nil && err == nil {
 			t.Errorf("expected %v, actual %v", expectedErr, err)
 		}
-		if !slices.Equal(actual.Token, expected) {
+		if !slices.Equal(actual, expected) {
 			t.Errorf("expected %v, actual %v", expected, actual)
 		}
 	}

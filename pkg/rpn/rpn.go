@@ -17,11 +17,7 @@ const (
 	rightBracketToken
 )
 
-type RPN struct {
-	Token []string
-}
-
-func NewRPN(input string) (*RPN, error) {
+func NewRPN(input string) ([]string, error) {
 	input = strings.ReplaceAll(input, "+", " + ")
 	input = strings.ReplaceAll(input, "-", " - ")
 	input = strings.ReplaceAll(input, "*", " * ")
@@ -32,7 +28,7 @@ func NewRPN(input string) (*RPN, error) {
 	tokens := strings.Fields(input)
 	fmt.Println(tokens)
 
-	rpn := RPN{}
+	rpn := make([]string, 0, len(tokens))
 	stack := stack.NewStack[string]()
 	prevToken := emptyToken
 
@@ -42,13 +38,13 @@ func NewRPN(input string) (*RPN, error) {
 
 		if isOperator(token) {
 			if isUnaryOperator(token, prevToken) {
-				rpn.Token = append(rpn.Token, "0")
+				rpn = append(rpn, "0")
 				stack.Push(token)
 			}
 			for !stack.Empty() && isOperator(stack.Top()) {
 				op := stack.Pop()
 				if operatorPriority(op) <= operatorPriority(token) {
-					rpn.Token = append(rpn.Token, op)
+					rpn = append(rpn, op)
 				} else {
 					stack.Push(op)
 					break
@@ -61,7 +57,7 @@ func NewRPN(input string) (*RPN, error) {
 			curToken = leftBracketToken
 		} else if token == ")" {
 			for !stack.Empty() && stack.Top() != "(" {
-				rpn.Token = append(rpn.Token, stack.Pop())
+				rpn = append(rpn, stack.Pop())
 			}
 			if stack.Empty() {
 				return nil, fmt.Errorf("error")
@@ -74,7 +70,7 @@ func NewRPN(input string) (*RPN, error) {
 			if err != nil {
 				return nil, fmt.Errorf("incorrect token: '%s'", token)
 			}
-			rpn.Token = append(rpn.Token, token)
+			rpn = append(rpn, token)
 			curToken = numberToken
 		}
 
@@ -89,10 +85,10 @@ func NewRPN(input string) (*RPN, error) {
 		if token == "(" {
 			return nil, fmt.Errorf("unpaired brackets")
 		}
-		rpn.Token = append(rpn.Token, token)
+		rpn = append(rpn, token)
 	}
 
-	return &rpn, nil
+	return rpn, nil
 }
 
 func operatorPriority(op string) int {
