@@ -54,11 +54,12 @@ type Expression struct {
 	ID     string `json:"id"`
 	Status string `json:"status"`
 	Result string `json:"result"`
+	Source string `json:"source"`
 }
 
 // Структура для ответа по запросу на endpoint expressions/{id}
 type ExpressionUnit struct {
-	Expr Expression `json:"expression`
+	Expr Expression `json:"expression"`
 }
 
 // Структура для ответа по запросу на endpoint expressions
@@ -77,6 +78,7 @@ func NewExpression(id, expr string) (*Expression, error) {
 		ID:     id,
 		Status: StatusInProcess,
 		Result: "",
+		Source: expr,
 	}
 	for _, val := range rpn {
 		if strings.Contains("-+*/", val) {
@@ -91,4 +93,11 @@ func NewExpression(id, expr string) (*Expression, error) {
 	}
 	fmt.Println(expression)
 	return &expression, nil
+}
+
+// структура связывающая узел списка, в который нужно положить
+// результат вычисления, с ID выражения, которое хранит это список
+type ExprElement struct {
+	ID  string
+	Ptr *list.Element
 }

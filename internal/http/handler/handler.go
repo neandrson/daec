@@ -8,6 +8,8 @@ import (
 	"slices"
 
 	"github.com/Vojan-Najov/daec/internal/service"
+	"github.com/Vojan-Najov/daec/internal/task"
+	"github.com/Vojan-Najov/daec/internal/result"
 )
 
 // тип Decorator служит для добавления middleware к обработчикам
@@ -31,7 +33,8 @@ func NewHandler(
 	serveMux.HandleFunc("/api/v1/calculate", calcState.calculate)
 	serveMux.HandleFunc("/api/v1/expressions", calcState.listAll)
 	serveMux.HandleFunc("/api/v1/expressions/{id}", calcState.listByID)
-	serveMux.HandleFunc("/internal/task", calcState.sendTask)
+	serveMux.HandleFunc("GET /internal/task", calcState.sendTask)
+	serveMux.HandleFunc("POST /internal/task", calcState.receiveResult)
 
 	return serveMux, nil
 }
@@ -109,16 +112,16 @@ func (cs *calcStates) listByID(w http.ResponseWriter, r *http.Request) {
 func (cs *calcStates) sendTask(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
-	task := cs.CalcService.GetTask()
-	if task == nil {
+	newTask := cs.CalcService.GetTask()
+	if newTask == nil {
 		http.Error(w, "no tasks", http.StatusNotFound)
 		return
 	}
 
 	answer := struct {
-		Task *service.Task `json:"task"`
+		Task *task.Task `json:"task"`
 	}{
-		Task: task,
+		Task: newTask, 
 	}
 
 	encoder := json.NewEncoder(w)
@@ -126,6 +129,22 @@ func (cs *calcStates) sendTask(w http.ResponseWriter, r *http.Request) {
 	err := encoder.Encode(&answer)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
+
+func (cs *calcStates) receiveResult(w http.ResponseWriter, r *http.Request) {
+	defer r.Body.Close()
+
+	var res result.Result
+	err := json.NewDecoder(r.Body).Decode(&res)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if err = cs.CalcService.PutResult(res); err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
 }

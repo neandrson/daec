@@ -2,30 +2,29 @@ package application
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
-	"net/http"
 	"time"
 
 	"github.com/Vojan-Najov/daec/internal/agent/config"
+	"github.com/Vojan-Najov/daec/internal/http/client"
+	"github.com/Vojan-Najov/daec/internal/result"
 	"github.com/Vojan-Najov/daec/internal/task"
 )
 
 type Application struct {
-	cfg    config.Config
-	client *http.Client
-	tasks  chan task.Task
-	result chan float64
+	cfg     config.Config
+	client  *client.Client
+	tasks   chan task.Task
+	results chan result.Result
 }
 
-var operations map[string]func(float64, float64) float64
+var ops map[string]func(float64, float64) float64
 
 func init() {
-	operations = make(map[string]func(float64, float64) float64)
-	operations["+"] = addition
-	operations["-"] = subtraction
-	operations["*"] = multiplication
-	operations["/"] = division
+	ops = make(map[string]func(float64, float64) float64)
+	ops["+"] = addition
+	ops["-"] = subtraction
+	ops["*"] = multiplication
+	ops["/"] = division
 }
 
 func addition(a, b float64) float64       { return a + b }
@@ -35,80 +34,46 @@ func division(a, b float64) float64       { return a / b }
 
 func NewApplication(cfg *config.Config) *Application {
 	return &Application{
-		cfg:    *cfg,
-		client: &http.Client{},
-		tasks:  make(chan task.Task),
-		result: make(chan float64),
+		cfg:     *cfg,
+		client:  &client.Client{},
+		tasks:   make(chan task.Task),
+		results: make(chan result.Result),
 	}
 }
 
 func (app *Application) Run(ctx context.Context) int {
-	defer close(app.result)
+	defer close(app.results)
 	defer close(app.tasks)
 	for i := 0; i < app.cfg.ComputingPower; i++ {
-		go func(tasks <-chan task.Task, result chan<- float64) {
+		go func(tasks <-chan task.Task, results chan<- result.Result) {
 			for {
 				select {
 				case task, ok := <-tasks:
 					if !ok {
 						return
 					}
-					// time.Sleep(task.OperationTime)
-					result <- operations[task.Operation](
-						task.Arg1,
-						task.Arg2,
-					)
-					if !ok {
-						return
+					time.Sleep(task.OperationTime)
+					value := ops[task.Operation](task.Arg1, task.Arg2)
+					results <- result.Result{
+						ID:    task.ID,
+						Value: value,
 					}
 				}
 			}
-		}(app.tasks, app.result)
+		}(app.tasks, app.results)
 	}
 	for {
 		select {
 		case <-ctx.Done():
 			return 0
-		case res := <-app.result:
-			fmt.Println(res)
-			//sendPostRequest(res)
+		case res := <-app.results:
+			app.client.SendResult(res)
 		default:
-			app.sendGetRequest()
+			task := app.client.GetTask()
+			if task != nil {
+				app.tasks <- *task
+			}
 		}
 	}
 	return 0
-}
-
-func (app *Application) sendGetRequest() {
-	req, err := http.NewRequest(http.MethodGet, "http://localhost:8081/internal/task", nil)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-
-	resp, err := app.client.Do(req.WithContext(ctx))
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return
-	}
-
-	answer := struct {
-		Task task.Task `json:"task"`
-	}{}
-
-	err = json.NewDecoder(resp.Body).Decode(&answer)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	app.tasks <- answer.Task
 }

@@ -22,7 +22,7 @@ func NewApplication(cfg *config.Config) *Application {
 
 func (orch *Application) Run(ctx context.Context) int {
 	logger := log.New(
-		os.Stdout,
+		os.Stderr,
 		"Orchestrator: ",
 		log.Ldate|log.Ltime|log.Lmsgprefix,
 	)

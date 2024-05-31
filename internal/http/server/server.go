@@ -17,7 +17,7 @@ func Run(
 	logger *log.Logger,
 	cfg config.Config,
 ) (func(context.Context) error, error) {
-	calcService := service.NewCalcService()
+	calcService := service.NewCalcService(cfg)
 
 	muxHandler, err := newMuxHandler(ctx, logger, calcService)
 	if err != nil {

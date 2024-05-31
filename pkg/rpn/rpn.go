@@ -26,20 +26,19 @@ func NewRPN(input string) ([]string, error) {
 	input = strings.ReplaceAll(input, ")", " ) ")
 
 	tokens := strings.Fields(input)
-	fmt.Println(tokens)
 
 	rpn := make([]string, 0, len(tokens))
 	stack := stack.NewStack[string]()
 	prevToken := emptyToken
 
 	for _, token := range tokens {
-		fmt.Printf("token is '%s'\n", token)
 		curToken := emptyToken
 
 		if isOperator(token) {
 			if isUnaryOperator(token, prevToken) {
 				rpn = append(rpn, "0")
 				stack.Push(token)
+				continue
 			}
 			for !stack.Empty() && isOperator(stack.Top()) {
 				op := stack.Pop()

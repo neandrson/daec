@@ -18,10 +18,11 @@ func (s *Stack[T]) Top() T {
 }
 
 func (s *Stack[T]) Push(val T) {
-	if cap(s.arr) == s.size {
+	if s.size < cap(s.arr) {
 		s.arr = append(s.arr, val)
-	} else {
 		s.arr[s.size] = val
+	} else {
+		s.arr = append(s.arr, val)
 	}
 	s.size++
 }
