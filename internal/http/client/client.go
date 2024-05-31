@@ -8,8 +8,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/Vojan-Najov/daec/internal/task"
 	"github.com/Vojan-Najov/daec/internal/result"
+	"github.com/Vojan-Najov/daec/internal/task"
 )
 
 type Client struct {
@@ -68,7 +68,6 @@ func (client *Client) SendResult(result result.Result) {
 	}
 	fmt.Println("buf", buf.String())
 
-
 	req, err := http.NewRequest(
 		http.MethodPost,
 		"http://localhost:8081/internal/task",
@@ -81,7 +80,7 @@ func (client *Client) SendResult(result result.Result) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	
+
 	resp, err := client.Do(req.WithContext(ctx))
 	if err != nil {
 		fmt.Println()
@@ -89,4 +88,3 @@ func (client *Client) SendResult(result result.Result) {
 	}
 	defer resp.Body.Close()
 }
-

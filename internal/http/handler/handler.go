@@ -6,10 +6,11 @@ import (
 	"encoding/json"
 	"net/http"
 	"slices"
+	"strconv"
 
+	"github.com/Vojan-Najov/daec/internal/result"
 	"github.com/Vojan-Najov/daec/internal/service"
 	"github.com/Vojan-Najov/daec/internal/task"
-	"github.com/Vojan-Najov/daec/internal/result"
 )
 
 // тип Decorator служит для добавления middleware к обработчикам
@@ -121,7 +122,7 @@ func (cs *calcStates) sendTask(w http.ResponseWriter, r *http.Request) {
 	answer := struct {
 		Task *task.Task `json:"task"`
 	}{
-		Task: newTask, 
+		Task: newTask,
 	}
 
 	encoder := json.NewEncoder(w)
@@ -143,7 +144,12 @@ func (cs *calcStates) receiveResult(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err = cs.CalcService.PutResult(res); err != nil {
+	value, err := strconv.ParseFloat(res.Value, 64)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusUnprocessableEntity)
+	}
+
+	if err = cs.CalcService.PutResult(res.ID, value); err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
