@@ -9,4 +9,4 @@ clean:
 	rm -f orchestrator
 	rm -f agent
 
-.PHONY: clean, orchestrator, agent
+.PHONY: clean orchestrator agent
