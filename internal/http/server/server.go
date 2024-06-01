@@ -25,6 +25,7 @@ func Run(
 	}
 
 	srv := &http.Server{Addr: ":8081", Handler: muxHandler}
+	logger.Printf("START SERVER ON PORT 8081\n")
 
 	go func() {
 		if err := srv.ListenAndServe(); err != nil {
@@ -64,6 +65,9 @@ func loggingMiddleware(
 			next.ServeHTTP(w, r)
 
 			// Завершение логирования после выполнения запроса
+			if r.URL.Path == "/internal/task" && r.Method == "GET" {
+				return
+			}
 			duration := time.Since(start)
 			logger.Printf(
 				"HTTP request - method: %s, path: %s, duration: %d\n",
