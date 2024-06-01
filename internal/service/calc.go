@@ -51,11 +51,7 @@ func (cs *CalcService) AddExpression(id, expr string) error {
 		return fmt.Errorf("not a unique ID: %q", id)
 	}
 
-	expression, err := NewExpression(id, expr)
-	if err != nil {
-		return err
-	}
-
+	expression, _ := NewExpression(id, expr)
 	cs.exprTable[id] = expression
 	cs.extractTasksFromExpression(expression)
 	return nil
@@ -167,7 +163,6 @@ func (cs *CalcService) extractTasksFromExpression(expr *Expression) int {
 	var taskCount int
 	el := expr.Front()
 	for el != nil {
-		fmt.Println(el.Value)
 		el1 := el
 		if el1.Value.(Token).Type() != TokenTypeNumber {
 			el = el.Next()
@@ -205,6 +200,5 @@ func (cs *CalcService) extractTasksFromExpression(expr *Expression) int {
 		expr.Remove(op)
 	}
 
-	fmt.Printf("Add %d new tasks\n", taskCount)
 	return taskCount
 }
