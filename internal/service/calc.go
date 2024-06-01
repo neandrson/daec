@@ -133,7 +133,7 @@ func (cs *CalcService) PutResult(id int64, value float64) error {
 
 	timeout, found := cs.timeoutsTable[id]
 	if found {
-		timeout.Ctx.Done()
+		timeout.Cancel()
 	}
 
 	_, found = cs.taskTable[id]
