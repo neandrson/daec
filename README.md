@@ -13,9 +13,11 @@
 ## Сборка и запуск
 
 ### Linux
-  - Собрать и запустить оркестратор командой: \
+  - Собрать и запустить оркестратор командой:
   ```sh
 	make orchestrator && source scripts/setenv.sh && ./orchestrator
   ```
-  - Собрать и запустить agent командой: \
-  ```make agent && source scripts/setenv.sh && ./agent```
+  - Собрать и запустить agent командой:
+  ```sh
+  make agent && source scripts/setenv.sh && ./agent
+  ```
