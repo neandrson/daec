@@ -15,7 +15,7 @@
 ### Linux
   - Собрать и запустить оркестратор командой:
   ```sh
-	make orchestrator && source scripts/setenv.sh && ./orchestrator
+  make orchestrator && source scripts/setenv.sh && ./orchestrator
   ```
   - Собрать и запустить agent командой:
   ```sh
