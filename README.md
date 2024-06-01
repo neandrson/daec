@@ -13,5 +13,5 @@
 ## Сборка и запуск
 
 ### Linux
-  `make server`
+  `make server` \
   `make agent`
