@@ -57,3 +57,39 @@ docker compose down
 чтобы остановить запущенные контейнеры или `CTRC-C`, если контейнеры запущены не в фоне.
 
 Чтобы изменять переменные окружения, модифицируйте файл `.env`
+
+## Примеры
+
+###Чтобы добавить арифметическое выражение на вычисление, используйте запросы вида:
+
+```sh
+curl --location 'localhost/api/v1/calculate' \
+--header 'Content-Type: application/json' \
+--data '{
+      "id": "уникалиный_идентификатор_выражения",
+      "expression": "строка_с_выражением"
+}'
+```
+
+Например:
+
+```sh
+curl --location 'localhost/api/v1/calculate' \
+--header 'Content-Type: application/json' \
+--data '{
+      "id": "1",
+      "expression": "1 + 2 + 3 * -4 - 20 / 5"
+}'
+```
+
+или
+
+```sh
+curl --location 'localhost/api/v1/calculate' \
+--header 'Content-Type: application/json' \
+--data '{
+      "id": "abc",
+      "expression": "(100 - 50.137) / (14 - -3 * 5) - 34 * 2"
+}'
+```
+
