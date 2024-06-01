@@ -133,7 +133,7 @@ curl --location 'localhost/api/v1/expressions'
 }
 ```
 
-Всеuj возможно три статуса:
+Всего возможно три статуса:
 - `Error`:      найдена синтаксическая или грамматическая ошибка в аривметическом выражении
 - `In process`: выражение в процессе вычисления
 - `Done`:       получен результат выражения
@@ -141,3 +141,25 @@ curl --location 'localhost/api/v1/expressions'
 Стоит отметить, что деление на нуль не является ошибкой и будет получен результат.
 Это может быть `+inf`, `-inf` (бесконечность) или `NaN` (not a number), если числитель
 также был равен или близок к нулю.
+
+### Чтобы получить выражение по его идентификатору, используйте запрос:
+
+```sh
+curl --location 'localhost/api/v1/expressions/{id}'
+```
+
+Например,
+
+```sh
+curl --location 'localhost/api/v1/expressions/2'
+{
+    "expression": {
+        "id": "2",
+        "status": "Done",
+        "result": "3",
+        "source": "1 + 2"
+    }
+}
+curl --location 'localhost/api/v1/expressions/4'
+id "4" not found
+```
