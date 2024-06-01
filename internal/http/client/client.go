@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/Vojan-Najov/daec/internal/result"
@@ -14,15 +15,19 @@ import (
 
 type Client struct {
 	http.Client
+	Hostname string
+	Port     int
 }
 
 func (client *Client) GetTask() *task.Task {
+	url := fmt.Sprintf("http://%s:%d/internal/task", client.Hostname, client.Port)
 	req, err := http.NewRequest(
 		http.MethodGet,
-		"http://localhost:8081/internal/task",
-		nil)
+		url,
+		nil,
+	)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Fprintln(os.Stderr, err)
 		return nil
 	}
 
@@ -34,7 +39,7 @@ func (client *Client) GetTask() *task.Task {
 
 	resp, err := client.Do(req.WithContext(ctx))
 	if err != nil {
-		fmt.Println(err)
+		fmt.Fprintln(os.Stderr, err)
 		return nil
 	}
 	defer resp.Body.Close()
@@ -49,7 +54,7 @@ func (client *Client) GetTask() *task.Task {
 
 	err = json.NewDecoder(resp.Body).Decode(&answer)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Fprintln(os.Stderr, err)
 		return nil
 	}
 
@@ -57,24 +62,23 @@ func (client *Client) GetTask() *task.Task {
 }
 
 func (client *Client) SendResult(result result.Result) {
-	fmt.Println("res", result)
 	var buf bytes.Buffer
 	encoder := json.NewEncoder(&buf)
 	encoder.SetIndent("", "    ")
 	err := encoder.Encode(result)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Fprintln(os.Stderr, err)
 		return
 	}
-	fmt.Println("buf", buf.String())
 
+	url := fmt.Sprintf("http://%s:%d/internal/task", client.Hostname, client.Port)
 	req, err := http.NewRequest(
 		http.MethodPost,
-		"http://localhost:8081/internal/task",
+		url,
 		&buf,
 	)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Fprintln(os.Stderr, err)
 		return
 	}
 
@@ -83,7 +87,7 @@ func (client *Client) SendResult(result result.Result) {
 
 	resp, err := client.Do(req.WithContext(ctx))
 	if err != nil {
-		fmt.Println()
+		fmt.Fprintln(os.Stderr, err)
 		return
 	}
 	defer resp.Body.Close()

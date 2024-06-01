@@ -38,7 +38,7 @@ func division(a, b float64) float64       { return a / b }
 func NewApplication(cfg *config.Config) *Application {
 	return &Application{
 		cfg:     *cfg,
-		client:  &client.Client{},
+		client:  &client.Client{Hostname: cfg.Hostname, Port: cfg.Port},
 		tasks:   make(chan task.Task),
 		results: make(chan result.Result),
 	}
