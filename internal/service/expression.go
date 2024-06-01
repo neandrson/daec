@@ -2,7 +2,6 @@ package service
 
 import (
 	"container/list"
-	"fmt"
 	"strconv"
 	"strings"
 
@@ -69,10 +68,28 @@ type ExpressionList struct {
 
 func NewExpression(id, expr string) (*Expression, error) {
 	rpn, err := rpn.NewRPN(expr)
-	fmt.Println(rpn)
 	if err != nil {
-		return nil, err
+		expression := Expression{
+			List:   list.New(),
+			ID:     id,
+			Status: StatusError,
+			Result: "",
+			Source: expr,
+		}
+		return &expression, err
 	}
+
+	if len(rpn) == 1 {
+		expression := Expression{
+			List:   list.New(),
+			ID:     id,
+			Status: StatusDone,
+			Result: rpn[0],
+			Source: expr,
+		}
+		return &expression, nil
+	}
+
 	expression := Expression{
 		List:   list.New(),
 		ID:     id,
@@ -91,7 +108,6 @@ func NewExpression(id, expr string) (*Expression, error) {
 			expression.PushBack(NumToken{num})
 		}
 	}
-	fmt.Println(expression)
 	return &expression, nil
 }
 
