@@ -86,6 +86,9 @@ func NewRPN(input string) ([]string, error) {
 		}
 		rpn = append(rpn, token)
 	}
+	if prevToken != numberToken && prevToken != rightBracketToken {
+		return nil, fmt.Errorf("incorrect sequence near last token")
+	}
 
 	return rpn, nil
 }
