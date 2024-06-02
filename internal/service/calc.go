@@ -55,7 +55,6 @@ func (cs *CalcService) AddExpression(id, expr string) error {
 	cs.exprTable[id] = expression
 	if err == nil && expression.Status == StatusInProcess {
 		cs.extractTasksFromExpression(expression)
-		fmt.Println(cs.taskTable)
 	}
 	return nil
 }

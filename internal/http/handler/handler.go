@@ -31,9 +31,9 @@ func NewHandler(
 		CalcService: calcService,
 	}
 
-	serveMux.HandleFunc("/api/v1/calculate", calcState.calculate)
-	serveMux.HandleFunc("/api/v1/expressions", calcState.listAll)
-	serveMux.HandleFunc("/api/v1/expressions/{id}", calcState.listByID)
+	serveMux.HandleFunc("POST /api/v1/calculate", calcState.calculate)
+	serveMux.HandleFunc("GET /api/v1/expressions", calcState.listAll)
+	serveMux.HandleFunc("GET /api/v1/expressions/{id}", calcState.listByID)
 	serveMux.HandleFunc("GET /internal/task", calcState.sendTask)
 	serveMux.HandleFunc("POST /internal/task", calcState.receiveResult)
 
