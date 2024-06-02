@@ -91,7 +91,7 @@ func (cs *CalcService) FindById(id string) (*ExpressionUnit, error) {
 
 func (cs *CalcService) GetTask() *task.Task {
 	cs.locker.Lock()
-	cs.locker.Unlock()
+	defer cs.locker.Unlock()
 	if len(cs.tasks) == 0 {
 		return nil
 	}
@@ -104,7 +104,9 @@ func (cs *CalcService) GetTask() *task.Task {
 	)
 
 	go func(task task.Task) {
+		cs.locker.Lock()
 		timeout, found := cs.timeoutsTable[task.ID]
+		cs.locker.Unlock()
 		if !found {
 			return
 		}
