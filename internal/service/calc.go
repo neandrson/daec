@@ -55,6 +55,7 @@ func (cs *CalcService) AddExpression(id, expr string) error {
 	cs.exprTable[id] = expression
 	if err == nil && expression.Status == StatusInProcess {
 		cs.extractTasksFromExpression(expression)
+		fmt.Println(cs.taskTable)
 	}
 	return nil
 }
@@ -116,8 +117,8 @@ func (cs *CalcService) GetTask() *task.Task {
 		select {
 		case <-timeout.Timer.C:
 			cs.locker.Lock()
-			cs.locker.Unlock()
 			cs.tasks = append(cs.tasks, &task)
+			cs.locker.Unlock()
 		case <-timeout.Ctx.Done():
 			return
 		}
