@@ -19,6 +19,7 @@ services:
       - TIME_SUBTRACTION_MS=${TIME_SUBTRACTION_MS}
       - TIME_DIVISIONS_MS=${TIME_DIVISIONS_MS}
       - TIME_MULTIPLICATIONS_MS=${TIME_MULTIPLICATIONS_MS}
+      - CGO_ENABLED=1
   agent1:
     build:
       context: .
@@ -32,6 +33,7 @@ services:
       - path: .env
     environment:
       - COMPUTING_POWER=${COMPUTING_POWER}
+      - CGO_ENABLED=1
   agent2:
     build:
       context: .
@@ -45,6 +47,7 @@ services:
       - path: .env
     environment:
       - COMPUTING_POWER=${COMPUTING_POWER}
+      - CGO_ENABLED=1
   agent3:
     build:
       context: .
@@ -58,8 +61,7 @@ services:
       - path: .env
     environment:
       - COMPUTING_POWER=${COMPUTING_POWER}
-
-
+      - CGO_ENABLED=1
 
 networks:
   intnet:
