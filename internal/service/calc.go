@@ -51,9 +51,11 @@ func (cs *CalcService) AddExpression(id, expr string) error {
 		return fmt.Errorf("not a unique ID: %q", id)
 	}
 
-	expression, _ := NewExpression(id, expr)
+	expression, err := NewExpression(id, expr)
 	cs.exprTable[id] = expression
-	cs.extractTasksFromExpression(expression)
+	if err == nil && expression.Status == StatusInProcess {
+		cs.extractTasksFromExpression(expression)
+	}
 	return nil
 }
 
