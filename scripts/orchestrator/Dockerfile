@@ -1,6 +1,6 @@
 FROM quay.io/libpod/alpine
 
-RUN apk add build-base
+#RUN apk add build-base
 RUN wget https://go.dev/dl/go1.22.3.linux-amd64.tar.gz && \
     tar -C /usr/local -xzf go1.22.3.linux-amd64.tar.gz
 
@@ -11,6 +11,5 @@ ENV GOPATH /go
 COPY . /daec
 WORKDIR /daec
 
-#RUN go build -o orchestrator cmd/orchestrator/main.go
-
-CMD go run -race cmd/orchestrator/main.go
+#CMD go run -race cmd/orchestrator/main.go
+CMD go run cmd/orchestrator/main.go
