@@ -11,4 +11,4 @@ ENV PATH $PATH:/go/bin
 COPY . /daec
 WORKDIR /daec
 
-CMD source scripts/setenv.sh && go run -race cmd/agent/main.go -h orchestrator -p 8081
+CMD go run -race cmd/agent/main.go -h orchestrator -p 8081

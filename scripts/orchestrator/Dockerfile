@@ -13,5 +13,4 @@ WORKDIR /daec
 
 #RUN go build -o orchestrator cmd/orchestrator/main.go
 
-#CMD source scripts/setenv.sh && ./orchestrator
-CMD source scripts/setenv.sh && go run -race cmd/orchestrator/main.go
+CMD go run -race cmd/orchestrator/main.go
