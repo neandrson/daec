@@ -11,7 +11,6 @@ import (
 	"github.com/Vojan-Najov/daec/internal/http/client"
 	"github.com/Vojan-Najov/daec/internal/result"
 	"github.com/Vojan-Najov/daec/internal/task"
-	"github.com/Vojan-Najov/daec/pkg/counter"
 )
 
 type Application struct {
@@ -19,7 +18,7 @@ type Application struct {
 	client  *client.Client
 	tasks   chan task.Task
 	results chan result.Result
-	counter *counter.Counter
+	ready   chan struct{}
 }
 
 var ops map[string]func(float64, float64) float64
@@ -43,7 +42,7 @@ func NewApplication(cfg *config.Config) *Application {
 		client:  &client.Client{Hostname: cfg.Hostname, Port: cfg.Port},
 		tasks:   make(chan task.Task),
 		results: make(chan result.Result),
-		counter: counter.NewCounter(cfg.ComputingPower),
+		ready:   make(chan struct{}, cfg.ComputingPower),
 	}
 }
 
@@ -52,7 +51,7 @@ func (app *Application) Run(ctx context.Context) int {
 	defer close(app.tasks)
 
 	for i := 0; i < app.cfg.ComputingPower; i++ {
-		go runWorker(app.tasks, app.results, app.counter)
+		go runWorker(app.tasks, app.results, app.ready)
 	}
 
 	for {
@@ -61,13 +60,12 @@ func (app *Application) Run(ctx context.Context) int {
 			return 0
 		case res := <-app.results:
 			app.client.SendResult(res)
-		default:
-			if app.counter.Value() > 0 {
-				task := app.client.GetTask()
-				if task != nil {
-					fmt.Println("Task getted")
-					app.tasks <- *task
-				}
+		case <-app.ready:
+			task := app.client.GetTask()
+			if task == nil {
+				app.ready <- struct{}{}
+			} else {
+				app.tasks <- *task
 			}
 		}
 	}
@@ -76,15 +74,15 @@ func (app *Application) Run(ctx context.Context) int {
 func runWorker(
 	tasks <-chan task.Task,
 	results chan<- result.Result,
-	counter *counter.Counter,
+	ready chan<- struct{},
 ) {
 	for {
+		ready <- struct{}{}
 		task, ok := <-tasks
 		if !ok {
 			return
 		}
 
-		counter.Decrement()
 		time.Sleep(task.OperationTime)
 
 		arg1, err1 := strconv.ParseFloat(task.Arg1, 64)
@@ -101,7 +99,5 @@ func runWorker(
 				Value: fmt.Sprintf("%f", value),
 			}
 		}
-
-		counter.Increment()
 	}
 }
