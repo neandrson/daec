@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+
 	_ "os"
 	"time"
 
@@ -27,7 +28,7 @@ func (client *Client) GetTask() *task.Task {
 		nil,
 	)
 	if err != nil {
-		// fmt.Fprintln(os.Stderr, err)
+		//fmt.Fprintln(os.Stderr, err)
 		return nil
 	}
 
@@ -39,7 +40,7 @@ func (client *Client) GetTask() *task.Task {
 
 	resp, err := client.Do(req.WithContext(ctx))
 	if err != nil {
-		// fmt.Fprintln(os.Stderr, err)
+		//fmt.Fprintln(os.Stderr, err)
 		time.Sleep(500)
 		return nil
 	}
@@ -55,7 +56,7 @@ func (client *Client) GetTask() *task.Task {
 
 	err = json.NewDecoder(resp.Body).Decode(&answer)
 	if err != nil {
-		// fmt.Fprintln(os.Stderr, err)
+		//fmt.Fprintln(os.Stderr, err)
 		return nil
 	}
 
@@ -68,7 +69,7 @@ func (client *Client) SendResult(result result.Result) {
 	encoder.SetIndent("", "    ")
 	err := encoder.Encode(result)
 	if err != nil {
-		// fmt.Fprintln(os.Stderr, err)
+		//fmt.Fprintln(os.Stderr, err)
 		return
 	}
 
@@ -79,7 +80,7 @@ func (client *Client) SendResult(result result.Result) {
 		&buf,
 	)
 	if err != nil {
-		// fmt.Fprintln(os.Stderr, err)
+		//fmt.Fprintln(os.Stderr, err)
 		return
 	}
 
@@ -88,7 +89,7 @@ func (client *Client) SendResult(result result.Result) {
 
 	resp, err := client.Do(req.WithContext(ctx))
 	if err != nil {
-		// fmt.Fprintln(os.Stderr, err)
+		//fmt.Fprintln(os.Stderr, err)
 		return
 	}
 	defer resp.Body.Close()
